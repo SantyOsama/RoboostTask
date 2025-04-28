@@ -1,6 +1,0 @@
-@RoboostTask_HostAddress = http://localhost:5240
-
-GET {{RoboostTask_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

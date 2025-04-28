@@ -1,6 +1,8 @@
 
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using RoboostTask.Data;
 using RoboostTask.Models;
 
 namespace RoboostTask
@@ -24,6 +26,8 @@ namespace RoboostTask
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddMediatR(typeof(Program).Assembly);
 
             var app = builder.Build();
 
