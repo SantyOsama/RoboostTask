@@ -10,12 +10,10 @@ namespace RoboostTask.Features.Products.Commands
     public class AddProductCommandHandler : IRequestHandler<AddProductCommand, Response<string>>
     {
         private readonly AppDbContext _context;
-
         public AddProductCommandHandler(AppDbContext context)
         {
             _context = context;
         }
-
         public async Task<Response<string>> Handle(AddProductCommand request, CancellationToken cancellationToken)
         {
             var product = new Product

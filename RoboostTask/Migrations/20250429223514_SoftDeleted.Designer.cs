@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RoboostTask.Data;
 
@@ -11,9 +12,11 @@ using RoboostTask.Data;
 namespace RoboostTask.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250429223514_SoftDeleted")]
+    partial class SoftDeleted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,6 +247,11 @@ namespace RoboostTask.Migrations
                     b.Property<int?>("DestinationWarehouseId")
                         .HasColumnType("int");
 
+                    b.Property<string>("PerformedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
@@ -256,9 +264,6 @@ namespace RoboostTask.Migrations
                     b.Property<int>("TransactionType")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DestinationWarehouseId");
@@ -266,8 +271,6 @@ namespace RoboostTask.Migrations
                     b.HasIndex("ProductId");
 
                     b.HasIndex("SourceWarehouseId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("InventoryTransactions");
                 });
@@ -425,17 +428,11 @@ namespace RoboostTask.Migrations
                         .HasForeignKey("SourceWarehouseId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("RoboostTask.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
                     b.Navigation("DestinationWarehouse");
 
                     b.Navigation("Product");
 
                     b.Navigation("SourceWarehouse");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("RoboostTask.Models.Stock", b =>

@@ -9,12 +9,10 @@ namespace RoboostTask.Features.Products.Queries
     public class GetProductByIdQueryHandler: IRequestHandler<GetProductByIdQuery, Response<GetProductResponse>>
     {
         private readonly AppDbContext _context;
-
         public GetProductByIdQueryHandler(AppDbContext context)
         {
             _context = context;
         }
-
         public async Task<Response<GetProductResponse>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
             var product = await _context.Products

@@ -68,20 +68,11 @@ namespace RoboostTask.Controllers
             var result = await _mediator.Send(command);
             return result;
         }
-
-        //[HttpDelete("{id:int}")]
-        //public async Task<IActionResult> DeleteProduct(int id)
-        //{
-        //    var result = await _mediator.Send(new DeleteProductCommand { Id = id });
-
-        //    if (result.Succeeded)
-        //    {
-        //        return NoContent();
-        //    }
-        //    else
-        //    {
-        //        return NotFound(result);
-        //    }
-        //}
+        [HttpDelete("{id:int}")]
+        public async Task<Response<string>> DeleteProduct(int id)
+        {
+            var result = await _mediator.Send(new DeleteProductCommand(id));
+            return result;
+        }
     }
 }

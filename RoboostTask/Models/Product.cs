@@ -16,9 +16,8 @@ namespace RoboostTask.Models
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public int LowStockThreshold { get; set; } = 3;
-
+        public bool IsDeleted { get; set; } = false;
         public ICollection<InventoryTransaction> Transactions { get; set; }
-
 
     }
 }

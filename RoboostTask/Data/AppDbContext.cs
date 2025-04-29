@@ -12,6 +12,7 @@ namespace RoboostTask.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
+        public DbSet<Stock> Stocks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +29,8 @@ namespace RoboostTask.Data
                 .WithMany(w => w.DestinationTransactions)
                 .HasForeignKey(t => t.DestinationWarehouseId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
         }
     }
 }

@@ -9,12 +9,10 @@ namespace RoboostTask.Features.Products.Commands
     public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Response<string>>
     {
         private readonly AppDbContext _context;
-
         public UpdateProductCommandHandler(AppDbContext context)
         {
             _context = context;
         }
-
         public async Task<Response<string>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
