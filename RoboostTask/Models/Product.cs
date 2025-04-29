@@ -17,8 +17,8 @@ namespace RoboostTask.Models
         public int Quantity { get; set; }
         public int LowStockThreshold { get; set; } = 3;
 
-        public int? CategoryId { get; set; }
-        public virtual Category Category { get; set; }
+        public ICollection<InventoryTransaction> Transactions { get; set; }
+
 
     }
 }

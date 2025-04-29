@@ -10,7 +10,24 @@ namespace RoboostTask.Data
 
         //من التوتر نسيت اعملها بابليك :(
         public DbSet<Product> Products { get; set; }
-        public DbSet<Category> Categories { get; set; } 
+        public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
+        public DbSet<Warehouse> Warehouses { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<InventoryTransaction>()
+                .HasOne(t => t.SourceWarehouse)
+                .WithMany(w => w.SourceTransactions)
+                .HasForeignKey(t => t.SourceWarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<InventoryTransaction>()
+                .HasOne(t => t.DestinationWarehouse)
+                .WithMany(w => w.DestinationTransactions)
+                .HasForeignKey(t => t.DestinationWarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }

@@ -174,6 +174,16 @@ namespace RoboostTask.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -220,7 +230,7 @@ namespace RoboostTask.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("RoboostTask.Models.Category", b =>
+            modelBuilder.Entity("RoboostTask.Models.InventoryTransaction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -228,19 +238,38 @@ namespace RoboostTask.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
+                    b.Property<int?>("DestinationWarehouseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PerformedBy")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SourceWarehouseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionType")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.HasIndex("DestinationWarehouseId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SourceWarehouseId");
+
+                    b.ToTable("InventoryTransactions");
                 });
 
             modelBuilder.Entity("RoboostTask.Models.Product", b =>
@@ -250,9 +279,6 @@ namespace RoboostTask.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -275,9 +301,30 @@ namespace RoboostTask.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("RoboostTask.Models.Warehouse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Warehouses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -331,18 +378,41 @@ namespace RoboostTask.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RoboostTask.Models.Product", b =>
+            modelBuilder.Entity("RoboostTask.Models.InventoryTransaction", b =>
                 {
-                    b.HasOne("RoboostTask.Models.Category", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId");
+                    b.HasOne("RoboostTask.Models.Warehouse", "DestinationWarehouse")
+                        .WithMany("DestinationTransactions")
+                        .HasForeignKey("DestinationWarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Category");
+                    b.HasOne("RoboostTask.Models.Product", "Product")
+                        .WithMany("Transactions")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RoboostTask.Models.Warehouse", "SourceWarehouse")
+                        .WithMany("SourceTransactions")
+                        .HasForeignKey("SourceWarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("DestinationWarehouse");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("SourceWarehouse");
                 });
 
-            modelBuilder.Entity("RoboostTask.Models.Category", b =>
+            modelBuilder.Entity("RoboostTask.Models.Product", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("RoboostTask.Models.Warehouse", b =>
+                {
+                    b.Navigation("DestinationTransactions");
+
+                    b.Navigation("SourceTransactions");
                 });
 #pragma warning restore 612, 618
         }

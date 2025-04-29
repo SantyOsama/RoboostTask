@@ -18,7 +18,6 @@ namespace RoboostTask.Features.Products.Queries
         public async Task<Response<ProductDTO>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
             var product = await _context.Products
-                .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
             if (product == null)

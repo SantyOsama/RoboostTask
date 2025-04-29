@@ -24,7 +24,6 @@ namespace RoboostTask.Features.Products.Commands
                 Price = request.Price,
                 Quantity = request.Quantity,
                 LowStockThreshold = request.LowStockThreshold,
-                CategoryId = request.CategoryId
             };
             _context.Products.Add(product);
             await _context.SaveChangesAsync(cancellationToken);
