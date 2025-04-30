@@ -7,26 +7,34 @@ using RoboostTask.DTOs.Products;
 
 namespace RoboostTask.Features.Products.Commands
 {
-    public class AddProductCommandHandler : IRequestHandler<AddProductCommand, Response<string>>
+    public class AddProductCommandHandler : IRequestHandler<AddProductCommand, Response<int>>
     {
         private readonly AppDbContext _context;
         public AddProductCommandHandler(AppDbContext context)
         {
             _context = context;
         }
-        public async Task<Response<string>> Handle(AddProductCommand request, CancellationToken cancellationToken)
+        public async Task<Response<int>> Handle(AddProductCommand request, CancellationToken cancellationToken)
         {
+            var exists = await _context.Products
+                .AnyAsync(p => p.Name == request.ProductRequest.Name);
+
+            if (exists)
+                return Response<int>.Fail("Product name already exists", statusCode: 409);
+
             var product = new Product
             {
                 Name = request.ProductRequest.Name,
                 Description = request.ProductRequest.Description,
                 Price = request.ProductRequest.Price,
                 Quantity = request.ProductRequest.Quantity,
-                LowStockThreshold = request.ProductRequest.LowStockThreshold,
+                LowStockThreshold = request.ProductRequest.LowStockThreshold
             };
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync(cancellationToken);
-            return new Response<string>().Success(string.Empty,"Product added successfully.");
+
+            await _context.Products.AddAsync(product);
+            await _context.SaveChangesAsync();
+
+            return Response<int>.Success(product.Id, "Product created successfully");
         }
 
     }

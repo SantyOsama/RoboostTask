@@ -5,14 +5,23 @@ namespace RoboostTask.DTOs.Products
     public class GetProductResponse
     {
         public int Id { get; set; }
-        [Required]
-        [StringLength(50)]
+        public bool IsLowStock { get; set; }
+
+        [Required(ErrorMessage = "Product name is required")]
+        [StringLength(50, ErrorMessage = "Name cannot exceed 50 characters")]
         public string Name { get; set; }
-        [Required]
-        [StringLength(500)]
+
+        [Required(ErrorMessage = "Description is required")]
+        [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
         public string Description { get; set; }
+
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be positive")]
         public decimal Price { get; set; }
-        public int Quantity { get; set; }
-        public int LowStockThreshold { get; set; }
+
+        [Range(0, int.MaxValue, ErrorMessage = "Quantity cannot be negative")]
+        public int Quantity { get; set; } = 0;
+
+        [Range(1, int.MaxValue, ErrorMessage = "Threshold must be at least 1")]
+        public int LowStockThreshold { get; set; } = 3;
     }
 }

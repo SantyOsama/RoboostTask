@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Inventory\Commands\" />
     <Folder Include="Repositories\" />
   </ItemGroup>
 

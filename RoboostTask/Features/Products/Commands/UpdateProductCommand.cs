@@ -1,16 +1,10 @@
 ﻿using MediatR;
+using RoboostTask.DTOs.Products;
 using RoboostTask.GeneralResponse;
 using RoboostTask.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace RoboostTask.Features.Products.Commands
 {
-    public record UpdateProductCommand(
-        int Id,
-        string Name,
-        string Description,
-        decimal Price,
-        int Quantity,
-        int LowStockThreshold
-    ) : IRequest<Response<string>>;
+    public record UpdateProductCommand(UpdateProductRequest ProductRequest) : IRequest<Response<string>>;
 }

@@ -17,8 +17,10 @@ namespace RoboostTask.Models
 
         [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
-        public DateTime Date { get; set; } = DateTime.UtcNow;
+        public DateTime Date { get; set; }
 
+        [ForeignKey("User")]
+        public string UserId {  get; set; }
         public ApplicationUser User { get; set; }
 
         public int? SourceWarehouseId { get; set; }

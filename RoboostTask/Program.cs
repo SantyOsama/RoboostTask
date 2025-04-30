@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RoboostTask.Data;
 using RoboostTask.Models;
+using System.Security.Claims;
 using System.Text;
 
 namespace RoboostTask
@@ -66,28 +67,45 @@ namespace RoboostTask
                     });
             }); // to support JWT
             builder.Services.AddMediatR(typeof(Program).Assembly);
+            //builder.Services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("AdminOnly", policy =>
+            //        policy.RequireRole("Admin"));
 
-            builder.Services.AddAuthentication(options => {
-                options.DefaultAuthenticateScheme =
-                    JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme =
-                    JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme =
-                    JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
+            //    options.AddPolicy("ManagerOnly", policy =>
+            //        policy.RequireRole("Manager"));
+
+            //    options.AddPolicy("UserOnly", policy =>
+            //        policy.RequireRole("User"));
+
+            //    options.AddPolicy("AdminOrManager", policy =>
+            //        policy.RequireRole("Admin", "Manager"));
+
+            //    options.AddPolicy("AdminOrUser", policy =>
+            //        policy.RequireRole("Admin", "User"));
+            //});
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
             {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = builder.Configuration["JWT:Issuer"],
                     ValidateAudience = true,
-                    ValidAudience = builder.Configuration["JWT:Audiance"],
-                    IssuerSigningKey = new SymmetricSecurityKey
-                    (Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["JWT:Iss"],
+                    ValidAudience = builder.Configuration["JWT:Aud"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
                 };
             });
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 

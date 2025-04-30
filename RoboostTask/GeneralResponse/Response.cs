@@ -7,22 +7,27 @@ namespace RoboostTask.GeneralResponse
         public T Data { get; set; }
         public string Message { get; set; }
         public bool IsSucceeded { get; set; }
+        public int StatusCode { get; set; } = 200;
+
         public Response() { }
 
-        public Response<T> Success(T data, string message = null)
-        {
-            return new Response<T>(data,true, message);
-        }
-        public Response<T> Fail(T data, string message = null)
-        {
-            return new Response<T>(data, false, message);
-        }
-        private Response(T data,bool isSucceeded,string message = null)
-        {
-            Data = data;
-            IsSucceeded = isSucceeded;
-            Message = message;
-        }
+        public static Response<T> Success(T data, string message = null, int statusCode = 200)
+            => new Response<T>
+            {
+                Data = data,
+                IsSucceeded = true,
+                Message = message ?? "Succeeded",
+                StatusCode = statusCode
+            };
+
+        public static Response<T> Fail(string message, T data = default, int statusCode = 400)
+            => new Response<T>
+            {
+                Data = data,
+                IsSucceeded = false,
+                Message = message ?? "Failed",
+                StatusCode = statusCode
+            };
 
     }
 }

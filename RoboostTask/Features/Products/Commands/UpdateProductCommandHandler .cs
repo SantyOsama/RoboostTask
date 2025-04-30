@@ -15,23 +15,23 @@ namespace RoboostTask.Features.Products.Commands
         }
         public async Task<Response<string>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
+            var product = await _context.Products.FindAsync(request.ProductRequest.Id,cancellationToken);
 
             if (product == null)
             {
-                return new Response<string>().Fail(null, "Product not found.");
+                return  Response<string>.Fail(null, "Product not found.");
             }
 
-            product.Name = request.Name;
-            product.Description = request.Description;
-            product.Price = request.Price;
-            product.Quantity = request.Quantity;
-            product.LowStockThreshold = request.LowStockThreshold;
+            product.Name = request.ProductRequest.Name;
+            product.Description = request.ProductRequest.Description;
+            product.Price = request.ProductRequest.Price;
+            product.Quantity = request.ProductRequest.Quantity;
+            product.LowStockThreshold = request.ProductRequest.LowStockThreshold;
 
             _context.Products.Update(product);
             await _context.SaveChangesAsync(cancellationToken);
           
-            return new Response<string>().Success(string.Empty, "Product updated successfully.");
+            return Response<string>.Success(string.Empty, "Product updated successfully.");
         }
     }
 }

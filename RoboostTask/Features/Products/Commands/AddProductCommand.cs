@@ -4,5 +4,5 @@ using RoboostTask.GeneralResponse;
 
 namespace RoboostTask.Features.Products.Commands
 {
-    public record AddProductCommand (AddProductRequest ProductRequest) : IRequest<Response<string>>;
+    public record AddProductCommand (AddProductRequest ProductRequest) : IRequest<Response<int>>;
 }

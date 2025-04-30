@@ -34,10 +34,12 @@ namespace RoboostTask.Features.Users.Commands
                 throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
 
             var roleName = request.Role.ToString();
+
             if (!await _roleManager.RoleExistsAsync(roleName))
                 await _roleManager.CreateAsync(new IdentityRole(roleName));
 
             await _userManager.AddToRoleAsync(user, roleName);
+
 
             return new RegisterResultDTO { Message = "User registered successfully." };
         }

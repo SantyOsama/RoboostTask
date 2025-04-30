@@ -15,11 +15,11 @@ namespace RoboostTask.Features.Products.Queries
         }
         public async Task<Response<GetProductResponse>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var product = await _context.Products
+            var product = await _context.Products.AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
             if (product == null)
-                return new Response<GetProductResponse>().Fail(null,"Product not found.");
+                return Response<GetProductResponse>.Fail("Product not found.");
 
             var productDto = new GetProductResponse
             {
@@ -31,7 +31,7 @@ namespace RoboostTask.Features.Products.Queries
                 LowStockThreshold = product.LowStockThreshold
             };
 
-            return new Response<GetProductResponse>().Success(productDto);
+            return  Response<GetProductResponse>.Success(productDto);
         }
     }
 }

@@ -17,6 +17,8 @@ namespace RoboostTask.Models
         public int Quantity { get; set; }
         public int LowStockThreshold { get; set; } = 3;
         public bool IsDeleted { get; set; } = false;
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public ICollection<InventoryTransaction> Transactions { get; set; }
 
     }

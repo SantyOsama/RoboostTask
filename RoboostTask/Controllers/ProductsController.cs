@@ -22,11 +22,11 @@ namespace RoboostTask.Controllers
         }
 
         [HttpPost]
-        public async Task<Response<string>> AddProduct([FromBody] AddProductRequest request)
+        public async Task<Response<int>> AddProduct([FromBody] AddProductRequest request)
         {
             if (!ModelState.IsValid)
             {
-                return new Response<string>().Fail(ModelState.ToString());
+                return Response<int>.Fail(ModelState.ToString());
             }
 
             var result = await _mediator.Send(new AddProductCommand(request));
@@ -34,7 +34,7 @@ namespace RoboostTask.Controllers
             return result;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<Response<GetProductResponse>> GetProductById(int id)
         {
             var result = await _mediator.Send(new GetProductByIdQuery(id));
@@ -49,27 +49,20 @@ namespace RoboostTask.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<Response<string>> UpdateProduct(int id, [FromBody] UpdateProductRequest request)
+        [HttpPut]
+        public async Task<Response<string>> UpdateProduct([FromBody] UpdateProductRequest request)
         {
             if (!ModelState.IsValid)
             {
-                return new Response<string>().Fail(null, "Invalid model state");
+                return  Response<string>.Fail(ModelState.ToString());
             }
 
-            var command = new UpdateProductCommand(
-                Id: id,
-                Name: request.Name,
-                Description: request.Description,
-                Price: request.Price,
-                Quantity: request.Quantity,
-                LowStockThreshold: request.LowStockThreshold
-            );
-
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(new UpdateProductCommand(request));
             return result;
         }
+        [Authorize("Admin")]
         [HttpDelete("{id:int}")]
-        public async Task<Response<string>> DeleteProduct(int id)
+        public async Task<Response<bool>> DeleteProduct(int id)
         {
             var result = await _mediator.Send(new DeleteProductCommand(id));
             return result;

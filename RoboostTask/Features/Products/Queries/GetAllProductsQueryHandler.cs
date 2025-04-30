@@ -16,7 +16,7 @@ namespace RoboostTask.Features.Products.Queries
         }
         public async Task<Response<List<GetProductResponse>>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
         {
-            var products = await _context.Products
+            var products = await _context.Products.AsNoTracking()
                 .Select(p => new GetProductResponse
                 {
                     Id = p.Id,
@@ -24,11 +24,11 @@ namespace RoboostTask.Features.Products.Queries
                     Description = p.Description,
                     Price = p.Price,
                     Quantity = p.Quantity,
-                    LowStockThreshold = p.LowStockThreshold
+                    IsLowStock = p.Quantity <= p.LowStockThreshold
                 })
                 .ToListAsync(cancellationToken);
 
-            return new Response<List<GetProductResponse>>().Success(products, "Products retrieved successfully.");
+            return Response<List<GetProductResponse>>.Success(products, "Products retrieved successfully.");
         }
     }
 }
