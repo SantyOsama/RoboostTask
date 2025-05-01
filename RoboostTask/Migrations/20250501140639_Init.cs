@@ -56,16 +56,14 @@ namespace RoboostTask.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     LowStockThreshold = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -76,10 +74,10 @@ namespace RoboostTask.Migrations
                 name: "Warehouses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    Location = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -196,22 +194,22 @@ namespace RoboostTask.Migrations
                 name: "InventoryTransactions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TransactionType = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    SourceWarehouseId = table.Column<int>(type: "int", nullable: true),
-                    DestinationWarehouseId = table.Column<int>(type: "int", nullable: true)
+                    PerformedByUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SourceWarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DestinationWarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_InventoryTransactions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_InventoryTransactions_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_InventoryTransactions_AspNetUsers_PerformedByUserId",
+                        column: x => x.PerformedByUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
@@ -239,11 +237,11 @@ namespace RoboostTask.Migrations
                 name: "Stocks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    WarehouseId = table.Column<int>(type: "int", nullable: false),
-                    QuantityInStock = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    WarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    QuantityInStock = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -307,6 +305,11 @@ namespace RoboostTask.Migrations
                 column: "DestinationWarehouseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InventoryTransactions_PerformedByUserId",
+                table: "InventoryTransactions",
+                column: "PerformedByUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InventoryTransactions_ProductId",
                 table: "InventoryTransactions",
                 column: "ProductId");
@@ -315,11 +318,6 @@ namespace RoboostTask.Migrations
                 name: "IX_InventoryTransactions_SourceWarehouseId",
                 table: "InventoryTransactions",
                 column: "SourceWarehouseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InventoryTransactions_UserId",
-                table: "InventoryTransactions",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Stocks_ProductId",

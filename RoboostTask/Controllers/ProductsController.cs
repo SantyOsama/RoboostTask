@@ -22,11 +22,11 @@ namespace RoboostTask.Controllers
         }
 
         [HttpPost]
-        public async Task<Response<int>> AddProduct([FromBody] AddProductRequest request)
+        public async Task<Response<Guid>> AddProduct([FromBody] AddProductRequest request)
         {
             if (!ModelState.IsValid)
             {
-                return Response<int>.Fail(ModelState.ToString());
+                return Response<Guid>.Fail(ModelState.ToString());
             }
 
             var result = await _mediator.Send(new AddProductCommand(request));
@@ -35,7 +35,7 @@ namespace RoboostTask.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<Response<GetProductResponse>> GetProductById(int id)
+        public async Task<Response<GetProductResponse>> GetProductById(Guid id)
         {
             var result = await _mediator.Send(new GetProductByIdQuery(id));
             return result;
@@ -62,7 +62,7 @@ namespace RoboostTask.Controllers
         }
         [Authorize("Admin")]
         [HttpDelete("{id:int}")]
-        public async Task<Response<bool>> DeleteProduct(int id)
+        public async Task<Response<bool>> DeleteProduct(Guid id)
         {
             var result = await _mediator.Send(new DeleteProductCommand(id));
             return result;

@@ -3,19 +3,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RoboostTask.Models
 {
-    public class Stock
+    public class Stock :Base
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
-        public int ProductId { get; set; }
+        public Guid ProductId { get; set; }
 
         [ForeignKey("ProductId")]
         public Product Product { get; set; }
 
         [Required]
-        public int WarehouseId { get; set; }
+        public Guid WarehouseId { get; set; }
 
         [ForeignKey("WarehouseId")]
         public Warehouse Warehouse { get; set; }

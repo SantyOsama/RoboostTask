@@ -2,10 +2,8 @@
 
 namespace RoboostTask.Models
 {
-    public class Product
+    public class Product:Base
     {
-        [Key]
-        public int Id { get; set; }
         [Required]
         [StringLength(50)]
         public string Name { get; set; }
@@ -13,12 +11,17 @@ namespace RoboostTask.Models
         [Required]
         [StringLength(500)]
         public string Description { get; set; }
+        [Required]
+        [Range(1, int.MaxValue)]
         public decimal Price { get; set; }
+        [Required]
+        [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
+        [Required]
+        [Range(1, int.MaxValue)]
         public int LowStockThreshold { get; set; } = 3;
         public bool IsDeleted { get; set; } = false;
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public ICollection<Stock> Stocks { get; set; } = new List<Stock>(); 
         public ICollection<InventoryTransaction> Transactions { get; set; }
 
     }

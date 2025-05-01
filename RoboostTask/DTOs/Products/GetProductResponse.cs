@@ -4,7 +4,7 @@ namespace RoboostTask.DTOs.Products
 {
     public class GetProductResponse
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public bool IsLowStock { get; set; }
 
         [Required(ErrorMessage = "Product name is required")]

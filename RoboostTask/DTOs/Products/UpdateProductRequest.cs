@@ -5,7 +5,7 @@ namespace RoboostTask.DTOs.Products
     public class UpdateProductRequest
     {
         [Required(ErrorMessage = "Product ID is required")]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required(ErrorMessage = "Product name is required")]
         [StringLength(50, ErrorMessage = "Name cannot exceed 50 characters")]

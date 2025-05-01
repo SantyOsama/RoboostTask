@@ -232,54 +232,53 @@ namespace RoboostTask.Migrations
 
             modelBuilder.Entity("RoboostTask.Models.InventoryTransaction", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DestinationWarehouseId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("DestinationWarehouseId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
+                    b.Property<string>("PerformedByUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SourceWarehouseId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("SourceWarehouseId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("TransactionType")
                         .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DestinationWarehouseId");
 
+                    b.HasIndex("PerformedByUserId");
+
                     b.HasIndex("ProductId");
 
                     b.HasIndex("SourceWarehouseId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("InventoryTransactions");
                 });
 
             modelBuilder.Entity("RoboostTask.Models.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -306,9 +305,6 @@ namespace RoboostTask.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.ToTable("Products");
@@ -316,20 +312,21 @@ namespace RoboostTask.Migrations
 
             modelBuilder.Entity("RoboostTask.Models.Stock", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("QuantityInStock")
                         .HasColumnType("int");
 
-                    b.Property<int>("WarehouseId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -342,11 +339,12 @@ namespace RoboostTask.Migrations
 
             modelBuilder.Entity("RoboostTask.Models.Warehouse", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -421,6 +419,12 @@ namespace RoboostTask.Migrations
                         .HasForeignKey("DestinationWarehouseId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("RoboostTask.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("PerformedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("RoboostTask.Models.Product", "Product")
                         .WithMany("Transactions")
                         .HasForeignKey("ProductId")
@@ -431,12 +435,6 @@ namespace RoboostTask.Migrations
                         .WithMany("SourceTransactions")
                         .HasForeignKey("SourceWarehouseId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("RoboostTask.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("DestinationWarehouse");
 
@@ -450,7 +448,7 @@ namespace RoboostTask.Migrations
             modelBuilder.Entity("RoboostTask.Models.Stock", b =>
                 {
                     b.HasOne("RoboostTask.Models.Product", "Product")
-                        .WithMany()
+                        .WithMany("Stocks")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -468,6 +466,8 @@ namespace RoboostTask.Migrations
 
             modelBuilder.Entity("RoboostTask.Models.Product", b =>
                 {
+                    b.Navigation("Stocks");
+
                     b.Navigation("Transactions");
                 });
 

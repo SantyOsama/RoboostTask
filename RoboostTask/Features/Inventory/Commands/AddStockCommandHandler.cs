@@ -30,7 +30,7 @@ namespace RoboostTask.Features.Inventory.Commands
                 ProductId = stock.ProductId,
                 Quantity = stock.Quantity,
                 TransactionType = TransactionType.AddStock,
-                UserId =request.UserId,
+                PerformedByUserId =request.UserId,
                 Date = DateTime.UtcNow
             };
 

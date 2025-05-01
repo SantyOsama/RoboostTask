@@ -4,12 +4,11 @@ using static RoboostTask.Enums.TransactionEnum;
 
 namespace RoboostTask.Models
 {
-    public class InventoryTransaction
+    public class InventoryTransaction:Base
     {
-        public int Id { get; set; }
 
         [Required]
-        public int ProductId { get; set; }
+        public Guid ProductId { get; set; }
         public Product Product { get; set; }
 
         [Required]
@@ -19,16 +18,17 @@ namespace RoboostTask.Models
         public int Quantity { get; set; }
         public DateTime Date { get; set; }
 
-        [ForeignKey("User")]
-        public string UserId {  get; set; }
+        [ForeignKey(nameof(User))]
+        public string PerformedByUserId { get; set; }
+        [Required]
         public ApplicationUser User { get; set; }
 
-        public int? SourceWarehouseId { get; set; }
+        public Guid? SourceWarehouseId { get; set; }
 
         [ForeignKey("SourceWarehouseId")] 
         public Warehouse SourceWarehouse { get; set; }
 
-        public int? DestinationWarehouseId { get; set; }
+        public Guid? DestinationWarehouseId { get; set; }
 
         [ForeignKey("DestinationWarehouseId")]  
         public Warehouse DestinationWarehouse { get; set; }
