@@ -9,6 +9,7 @@ using RoboostTask.Features.Transaction.Queries;
 using RoboostTask.Features.Products.Commands;
 using RoboostTask.GeneralResponse;
 using System.Security.Claims;
+using RoboostTask.Features.Transactions.Commands;
 
 namespace RoboostTask.Controllers
 {
@@ -46,34 +47,53 @@ namespace RoboostTask.Controllers
 
             return Response<string>.Success("Stock added successfully");
         }
+
         [HttpDelete("delete-stock")]
         public async Task<ActionResult<Response<string>>> DeleteStock([FromBody] DeleteStockRequest request)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(Response<string>.Fail("Invalid input"));
-                }
-
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Unauthorized(Response<string>.Fail("User is not authenticated"));
-                }
-
-                var result = await _mediator.Send(new DeleteStockCommand(request,userId));
-
-                if (!result.IsSucceeded)
-                {
-                    return StatusCode(result.StatusCode, Response<string>.Fail(result.Message));
-                }
-                return Ok(Response<string>.Success(result.Message));
+                return BadRequest(Response<string>.Fail("Invalid input"));
             }
-            catch (Exception ex)
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(500, Response<string>.Fail("An unexpected error occurred"));
+                return Unauthorized(Response<string>.Fail("User is not authenticated"));
             }
+
+            var result = await _mediator.Send(new DeleteStockCommand(request, userId));
+
+            if (!result.IsSucceeded)
+            {
+                return StatusCode(result.StatusCode, Response<string>.Fail(result.Message));
+            }
+            return Ok(Response<string>.Success(result.Message));
+        }
+        [Authorize]
+        [HttpPost("transfer-stock")]
+        public async Task<ActionResult<Response<bool>>> TransferStock([FromBody] TransferStockRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(Response<bool>.Fail("Invalid input"));
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(Response<bool>.Fail("User is not authenticated"));
+            }
+
+            var command = new TransferStockCommand(request, userId);
+            var result = await _mediator.Send(command);
+
+            if (!result.IsSucceeded)
+            {
+                return StatusCode(result.StatusCode, Response<bool>.Fail(result.Message));
+            }
+
+            return Ok(Response<bool>.Success(true, result.Message));
         }
 
         [HttpGet("current")]
@@ -82,6 +102,7 @@ namespace RoboostTask.Controllers
             var result = await _mediator.Send(new GetInventoryQuery());
             return Ok(result);
         }
+
 
         [Authorize]
         [HttpGet("check-role")]

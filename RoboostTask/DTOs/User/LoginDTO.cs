@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RoboostTask.DTOs
+namespace RoboostTask.DTOs.User
 {
     public class LoginDTO
     {

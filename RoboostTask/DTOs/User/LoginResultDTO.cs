@@ -1,4 +1,4 @@
-﻿namespace RoboostTask.DTOs
+﻿namespace RoboostTask.DTOs.User
 {
     public class LoginResultDTO
     {

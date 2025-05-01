@@ -9,10 +9,9 @@ namespace RoboostTask.Models
 
         [MaxLength(100)]
         public string Location { get; set; }
-
-        //** بفكر افصلهم يبقي الحاجات ال انا كنت فيها سورس لوحدها والحاجات ال انا كنت فيها مستقبل لوحدها **//
         public ICollection<InventoryTransaction> SourceTransactions { get; set; }
         public ICollection<InventoryTransaction> DestinationTransactions { get; set; }
+        public  ICollection<Stock> Stocks { get; set; }
 
     }
 }

@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using RoboostTask.DTOs;
+using RoboostTask.DTOs.User;
 using RoboostTask.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
-using RoboostTask.DTOs;
+using RoboostTask.DTOs.User;
 using RoboostTask.Models;
 
 namespace RoboostTask.Features.Users.Commands

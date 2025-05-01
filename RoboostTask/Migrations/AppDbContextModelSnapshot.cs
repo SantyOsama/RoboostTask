@@ -276,7 +276,7 @@ namespace RoboostTask.Migrations
 
                     b.HasIndex("WarehouseId");
 
-                    b.ToTable("InventoryTransactions");
+                    b.ToTable("InventoryTransactions", (string)null);
                 });
 
             modelBuilder.Entity("RoboostTask.Models.Product", b =>
@@ -312,7 +312,7 @@ namespace RoboostTask.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("RoboostTask.Models.Stock", b =>
@@ -339,7 +339,7 @@ namespace RoboostTask.Migrations
 
                     b.HasIndex("WarehouseId");
 
-                    b.ToTable("Stocks");
+                    b.ToTable("Stocks", (string)null);
                 });
 
             modelBuilder.Entity("RoboostTask.Models.Warehouse", b =>
@@ -363,7 +363,7 @@ namespace RoboostTask.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Warehouses");
+                    b.ToTable("Warehouses", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

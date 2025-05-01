@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using RoboostTask.DTOs;
+using RoboostTask.DTOs.User;
 
 namespace RoboostTask.Features.Users.Commands
 {
