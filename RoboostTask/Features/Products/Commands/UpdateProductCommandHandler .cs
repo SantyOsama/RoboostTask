@@ -1,25 +1,27 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RoboostTask.Data;
+using RoboostTask.DTOs.Products;
 using RoboostTask.GeneralResponse;
 using RoboostTask.Models;
+using RoboostTask.Repositories.Interfaces;
 
 namespace RoboostTask.Features.Products.Commands
 {
     public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Response<string>>
     {
-        private readonly AppDbContext _context;
-        public UpdateProductCommandHandler(AppDbContext context)
+        private readonly IProductRepository _productRepository;
+        public UpdateProductCommandHandler(IProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
         public async Task<Response<string>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.FindAsync(request.ProductRequest.Id,cancellationToken);
+            var product = await _productRepository.GetByIdAsync(request.ProductRequest.Id);
 
-            if (product == null)
+            if (product == null || product.IsDeleted)
             {
-                return  Response<string>.Fail(null, "Product not found.");
+                return  Response<string>.Fail("Product not found.");
             }
 
             product.Name = request.ProductRequest.Name;
@@ -28,9 +30,9 @@ namespace RoboostTask.Features.Products.Commands
             product.Quantity = request.ProductRequest.Quantity;
             product.LowStockThreshold = request.ProductRequest.LowStockThreshold;
 
-            _context.Products.Update(product);
-            await _context.SaveChangesAsync(cancellationToken);
-          
+            await _productRepository.UpdateAsync(product);
+            await _productRepository.SaveChangesAsyc();
+
             return Response<string>.Success(string.Empty, "Product updated successfully.");
         }
     }

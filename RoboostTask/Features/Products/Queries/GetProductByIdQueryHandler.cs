@@ -3,20 +3,20 @@ using Microsoft.EntityFrameworkCore;
 using RoboostTask.Data;
 using RoboostTask.DTOs.Products;
 using RoboostTask.GeneralResponse;
+using RoboostTask.Repositories.Interfaces;
 
 namespace RoboostTask.Features.Products.Queries
 {
     public class GetProductByIdQueryHandler: IRequestHandler<GetProductByIdQuery, Response<GetProductResponse>>
     {
-        private readonly AppDbContext _context;
-        public GetProductByIdQueryHandler(AppDbContext context)
+        private readonly IProductRepository _productRepository;
+        public GetProductByIdQueryHandler(IProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
         public async Task<Response<GetProductResponse>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.AsNoTracking()
-                .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
+            var product = await _productRepository.GetByIdAsync(request.Id);
 
             if (product == null)
                 return Response<GetProductResponse>.Fail("Product not found.");

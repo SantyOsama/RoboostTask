@@ -4,21 +4,23 @@ using RoboostTask.Data;
 using RoboostTask.Models;
 using RoboostTask.GeneralResponse;
 using RoboostTask.DTOs.Products;
+using RoboostTask.Repositories.Interfaces;
 
 namespace RoboostTask.Features.Products.Commands
 {
     public class AddProductCommandHandler : IRequestHandler<AddProductCommand, Response<Guid>>
     {
-        private readonly AppDbContext _context;
-        public AddProductCommandHandler(AppDbContext context)
+        private readonly IProductRepository _productRepository;
+        public AddProductCommandHandler(IProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
-        public async Task<Response<Guid>> Handle(AddProductCommand request, CancellationToken cancellationToken)
+ 
+       public async Task<Response<Guid>> Handle(AddProductCommand request, CancellationToken cancellationToken)
         {
-            var exists = await _context.Products
-                .AnyAsync(p => p.Name == request.ProductRequest.Name);
-
+            if (request?.ProductRequest == null)
+                return Response<Guid>.Fail("Product data is required", statusCode: 400);
+            var exists = await _productRepository.ProductExistsAsync(request.ProductRequest.Name);
             if (exists)
                 return Response<Guid>.Fail("Product name already exists", statusCode: 409);
 
@@ -28,13 +30,13 @@ namespace RoboostTask.Features.Products.Commands
                 Description = request.ProductRequest.Description,
                 Price = request.ProductRequest.Price,
                 Quantity = request.ProductRequest.Quantity,
-                LowStockThreshold = request.ProductRequest.LowStockThreshold
+                LowStockThreshold = request.ProductRequest.LowStockThreshold,
+                IsDeleted = false 
             };
+            await _productRepository.AddAsync(product);
+            await _productRepository.SaveChangesAsyc();
 
-            await _context.Products.AddAsync(product);
-            await _context.SaveChangesAsync();
-
-            return Response<Guid>.Success(product.Id, "Product created successfully");
+            return Response<Guid>.Success(product.Id,"Product created successfully", statusCode: 201);
         }
 
     }

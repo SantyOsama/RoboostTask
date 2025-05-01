@@ -4,19 +4,23 @@ using RoboostTask.Data;
 using RoboostTask.DTOs.Products;
 using RoboostTask.GeneralResponse;
 using RoboostTask.Models;
+using RoboostTask.Repositories.Interfaces;
 
 namespace RoboostTask.Features.Products.Queries
 {
     public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, Response<List<GetProductResponse>>>
     {
-        private readonly AppDbContext _context;
-        public GetAllProductsQueryHandler(AppDbContext context)
+        private readonly IProductRepository _productRepository;
+        public GetAllProductsQueryHandler(IProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
         public async Task<Response<List<GetProductResponse>>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
         {
-            var products = await _context.Products.AsNoTracking()
+            var products = await _productRepository.GetAllAsync();
+
+            var productDtos = products
+                .Where(p => !p.IsDeleted) 
                 .Select(p => new GetProductResponse
                 {
                     Id = p.Id,
@@ -24,11 +28,12 @@ namespace RoboostTask.Features.Products.Queries
                     Description = p.Description,
                     Price = p.Price,
                     Quantity = p.Quantity,
+                    LowStockThreshold = p.LowStockThreshold,
                     IsLowStock = p.Quantity <= p.LowStockThreshold
                 })
-                .ToListAsync(cancellationToken);
+                .ToList();
 
-            return Response<List<GetProductResponse>>.Success(products, "Products retrieved successfully.");
+            return Response<List<GetProductResponse>>.Success(productDtos,"Products retrieved successfully.");
         }
     }
 }

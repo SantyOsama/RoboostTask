@@ -6,7 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RoboostTask.Data;
+using RoboostTask.Data.Repositories;
 using RoboostTask.Models;
+using RoboostTask.Repositories.Interfaces;
+using RoboostTask.Repositories.Repos;
 using System.Security.Claims;
 using System.Text;
 
@@ -25,6 +28,9 @@ namespace RoboostTask
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+
+            // Add Interfaces
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 
             builder.Services.AddControllers();
@@ -106,6 +112,7 @@ namespace RoboostTask
                 };
             });
             builder.Services.AddAuthorization();
+
 
             var app = builder.Build();
 
