@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoboostTask.DTOs.Stocks;
 using RoboostTask.Enums;
-using RoboostTask.Features.Inventory.Commands;
-using RoboostTask.Features.Inventory.Queries;
+using RoboostTask.Features.Transaction.Commands;
+using RoboostTask.Features.Transaction.Queries;
 using RoboostTask.Features.Products.Commands;
 using RoboostTask.GeneralResponse;
 using System.Security.Claims;
@@ -14,11 +14,11 @@ namespace RoboostTask.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InventoryController : ControllerBase
+    public class InventoryTransactionsController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public InventoryController(IMediator mediator)
+        public InventoryTransactionsController(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -45,6 +45,35 @@ namespace RoboostTask.Controllers
             }
 
             return Response<string>.Success("Stock added successfully");
+        }
+        [HttpDelete("delete-stock")]
+        public async Task<ActionResult<Response<string>>> DeleteStock([FromBody] DeleteStockRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(Response<string>.Fail("Invalid input"));
+                }
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(Response<string>.Fail("User is not authenticated"));
+                }
+
+                var result = await _mediator.Send(new DeleteStockCommand(request,userId));
+
+                if (!result.IsSucceeded)
+                {
+                    return StatusCode(result.StatusCode, Response<string>.Fail(result.Message));
+                }
+                return Ok(Response<string>.Success(result.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Response<string>.Fail("An unexpected error occurred"));
+            }
         }
 
         [HttpGet("current")]

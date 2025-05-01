@@ -5,7 +5,7 @@ using RoboostTask.GeneralResponse;
 using RoboostTask.Models;
 using static RoboostTask.Enums.TransactionEnum;
 
-namespace RoboostTask.Features.Inventory.Commands
+namespace RoboostTask.Features.Transaction.Commands
 {
     public class AddStockCommandHandler : IRequestHandler<AddStockCommand, Response<string>>
     {

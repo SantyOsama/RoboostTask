@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RoboostTask.Data;
 using RoboostTask.DTOs;
-using RoboostTask.Features.Inventory.Queries;
+using RoboostTask.Features.Transaction.Queries;
 
 public class GetInventoryQueryHandler : IRequestHandler<GetInventoryQuery, List<InventoryDTO>>
 {
