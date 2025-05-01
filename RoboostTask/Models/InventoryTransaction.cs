@@ -35,5 +35,11 @@ namespace RoboostTask.Models
 
         //قابلتني مشكلة وان عندي اتنين اوبجيكت من وير هاوس هيميز ازاي بينهم
         //هروح احطها في الدي بي ست اعمل اوفررايد لفانكشن اون موديل كرييتنج
+
+
+        public Guid? WarehouseId { get; set; }
+        [ForeignKey("WarehouseId")]
+        public Warehouse Warehouse { get; set; }
+
     }
 }

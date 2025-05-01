@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using RoboostTask.Data;
 using RoboostTask.GeneralResponse;
 using RoboostTask.Models;
@@ -19,19 +20,54 @@ namespace RoboostTask.Features.Inventory.Commands
         {
             var stock = request.StockRequest;
 
-            var product = await _context.Products.FindAsync(stock.ProductId);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == stock.ProductId);
             if (product == null)
                 return  Response<string>.Fail(null, "Product not found");
 
+            Warehouse warehouse = null;
+            if (stock.WarehouseId != Guid.Empty)
+            {
+                warehouse = await _context.Warehouses
+                    .FirstOrDefaultAsync(w => w.Id == stock.WarehouseId, cancellationToken);
+
+                if (warehouse == null)
+                    return Response<string>.Fail(null, "Warehouse not found");
+            }
+
             product.Quantity += stock.Quantity;
 
+            if (stock.WarehouseId != Guid.Empty)
+            {
+                var stockItem = await _context.Stocks
+                    .FirstOrDefaultAsync(s => s.ProductId == stock.ProductId &&
+                                           s.WarehouseId == stock.WarehouseId,
+                                     cancellationToken);
+
+                if (stockItem == null)
+                {
+                    stockItem = new Stock
+                    {
+                        Id = Guid.NewGuid(),
+                        ProductId = stock.ProductId,
+                        WarehouseId = stock.WarehouseId,
+                        QuantityInStock = stock.Quantity
+                    };
+                    _context.Stocks.Add(stockItem);
+                }
+                else
+                {
+                    stockItem.QuantityInStock += stock.Quantity;
+                }
+            }
             var transaction = new InventoryTransaction
             {
                 ProductId = stock.ProductId,
                 Quantity = stock.Quantity,
                 TransactionType = TransactionType.AddStock,
-                PerformedByUserId =request.UserId,
-                Date = DateTime.UtcNow
+                PerformedByUserId = request.UserId,
+                Date = DateTime.UtcNow,
+                DestinationWarehouseId = stock.WarehouseId != Guid.Empty ? stock.WarehouseId : null,
+                WarehouseId = stock.WarehouseId != Guid.Empty ? stock.WarehouseId : null
             };
 
             _context.InventoryTransactions.Add(transaction);
