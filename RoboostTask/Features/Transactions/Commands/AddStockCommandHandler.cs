@@ -1,59 +1,70 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using RoboostTask.Data;
 using RoboostTask.GeneralResponse;
 using RoboostTask.Models;
+using RoboostTask.Repositories.Interfaces;
 using static RoboostTask.Enums.TransactionEnum;
 
 namespace RoboostTask.Features.Transaction.Commands
 {
     public class AddStockCommandHandler : IRequestHandler<AddStockCommand, Response<string>>
     {
-        private readonly AppDbContext _context;
+        private readonly IProductRepository _productRepository;
+        private readonly IWarehouseRepository _warehouseRepository;
+        private readonly IStockRepository _stockRepository;
+        private readonly IInventoryTransactionRepository _transactionRepository;
 
-        public AddStockCommandHandler(AppDbContext context)
+        public AddStockCommandHandler(
+            IProductRepository productRepository,
+            IWarehouseRepository warehouseRepository,
+            IStockRepository stockRepository,
+            IInventoryTransactionRepository transactionRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
+            _warehouseRepository = warehouseRepository;
+            _stockRepository = stockRepository;
+            _transactionRepository = transactionRepository;
         }
 
         public async Task<Response<string>> Handle(AddStockCommand request, CancellationToken cancellationToken)
         {
             var stock = request.StockRequest;
 
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == stock.ProductId && !p.IsDeleted);
-            if (product == null)
-                return  Response<string>.Fail(null, "Product not found or is not Active");
-
-            var  warehouse = await _context.Warehouses
-                    .FirstOrDefaultAsync(w => w.Id == stock.WarehouseId, cancellationToken);
-
-            if (warehouse == null)
-                    return Response<string>.Fail(null, "Warehouse not found");
-
-            product.Quantity += stock.Quantity;
+            var product = await _productRepository.GetByIdAsync(stock.ProductId);
+            if (product == null || product.IsDeleted)
+                return Response<string>.Fail("Product not found or is not active");
 
             if (stock.WarehouseId != Guid.Empty)
             {
-                var stockItem = await _context.Stocks
-                    .FirstOrDefaultAsync(s => s.ProductId == stock.ProductId &&
-                                           s.WarehouseId == stock.WarehouseId);
+                var warehouseExists = await _warehouseRepository.WarehouseExistsAsync(stock.WarehouseId);
+                if (!warehouseExists)
+                    return Response<string>.Fail("Warehouse not found");
+            }
+
+            product.Quantity += stock.Quantity;
+            await _productRepository.UpdateAsync(product);
+            await _productRepository.SaveChangesAsyc();
+
+            if (stock.WarehouseId != Guid.Empty)
+            {
+                var stockItem = await _stockRepository.GetStockAsync(stock.ProductId, stock.WarehouseId);
 
                 if (stockItem == null)
                 {
                     stockItem = new Stock
                     {
-                        Id = Guid.NewGuid(),
                         ProductId = stock.ProductId,
                         WarehouseId = stock.WarehouseId,
                         QuantityInStock = stock.Quantity,
                         IsActive = true
                     };
-                    _context.Stocks.Add(stockItem);
+                    await _stockRepository.AddAsync(stockItem);
                 }
                 else
                 {
                     stockItem.QuantityInStock += stock.Quantity;
+                    await _stockRepository.UpdateAsync(stockItem);
                 }
+                await _stockRepository.SaveChangesAsyc();
             }
             var transaction = new InventoryTransaction
             {
@@ -62,11 +73,11 @@ namespace RoboostTask.Features.Transaction.Commands
                 TransactionType = TransactionType.AddStock,
                 PerformedByUserId = request.UserId,
                 Date = DateTime.UtcNow,
-                DestinationWarehouseId = stock.WarehouseId != Guid.Empty ? stock.WarehouseId : null,
+                DestinationWarehouseId = stock.WarehouseId != Guid.Empty ? stock.WarehouseId : null
             };
 
-            _context.InventoryTransactions.Add(transaction);
-            await _context.SaveChangesAsync(cancellationToken);
+            await _transactionRepository.AddAsync(transaction);
+            await _transactionRepository.SaveChangesAsyc();
 
             return Response<string>.Success($"Stock added successfully for product {product.Name}");
         }

@@ -7,5 +7,8 @@ namespace RoboostTask.Repositories.Interfaces
         Task<bool> ProductExistsAsync(string name);
         Task SoftDeleteAsync(Guid id);
         Task<IEnumerable<Product>> GetLowStockProductsAsync();
+        Task<List<Product>> GetAllWithStocksAsync();
+        Task<Product?> GetByIdWithStocksAsync(Guid id);
+
     }
 }

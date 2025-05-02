@@ -1,32 +1,41 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using RoboostTask.Data;
 using RoboostTask.DTOs;
+using RoboostTask.Repositories.Interfaces;
 using RoboostTask.Features.Transaction.Queries;
+using RoboostTask.Models;
 
-public class GetInventoryQueryHandler : IRequestHandler<GetInventoryQuery, List<InventoryDTO>>
+namespace RoboostTask.Features.Transaction.Queries
 {
-    private readonly AppDbContext _context;
-
-    public GetInventoryQueryHandler(AppDbContext context)
+    public class GetInventoryQueryHandler : IRequestHandler<GetInventoryQuery, List<InventoryDTO>>
     {
-        _context = context;
-    }
+        private readonly IProductRepository _productRepository;
+        private readonly IWarehouseRepository _warehouseRepository;
+        private readonly IInventoryTransactionRepository _transactionRepository;
 
-    public async Task<List<InventoryDTO>> Handle(GetInventoryQuery request, CancellationToken cancellationToken)
-    {
-        var products = await _context.Products.AsNoTracking().ToListAsync();
-        var warehouses = await _context.Warehouses.AsNoTracking().ToListAsync();
-        var transactions = await _context.InventoryTransactions.AsNoTracking().ToListAsync();
+        public GetInventoryQueryHandler(
+            IProductRepository productRepository,
+            IWarehouseRepository warehouseRepository,
+            IInventoryTransactionRepository transactionRepository)
+        {
+            _productRepository = productRepository;
+            _warehouseRepository = warehouseRepository;
+            _transactionRepository = transactionRepository;
+        }
 
-        var inventory = (from product in products
-                         from warehouse in warehouses
-                         let quantity = transactions
-                            .Where(t => t.ProductId == product.Id &&
-                                       (t.SourceWarehouseId == warehouse.Id || t.DestinationWarehouseId == warehouse.Id))
-                            .Sum(t =>
-                                (t.DestinationWarehouseId == warehouse.Id ? t.Quantity : 0) -
-                                (t.SourceWarehouseId == warehouse.Id ? t.Quantity : 0))
+        public async Task<List<InventoryDTO>> Handle(
+            GetInventoryQuery request,
+            CancellationToken cancellationToken)
+        {
+            var products = await _productRepository.GetAllAsync();
+            var warehouses = await _warehouseRepository.GetAllAsync();
+            var transactions = await _transactionRepository.GetAllAsync();
+
+            var inventory = (from product in products
+                             from warehouse in warehouses
+                             let quantity = CalculateWarehouseProductQuantity(
+                                 product.Id,
+                                 warehouse.Id,
+                                 transactions)
                              select new InventoryDTO
                              {
                                  ProductId = product.Id,
@@ -35,8 +44,21 @@ public class GetInventoryQueryHandler : IRequestHandler<GetInventoryQuery, List<
                                  WarehouseName = warehouse.Name,
                                  QuantityInStock = quantity
                              }).ToList();
-        return inventory;
+
+            return inventory;
+        }
+        private int CalculateWarehouseProductQuantity(
+            Guid productId,
+            Guid warehouseId,
+            IEnumerable<InventoryTransaction> transactions)
+        {
+            return transactions
+                .Where(t => t.ProductId == productId &&
+                           (t.SourceWarehouseId == warehouseId ||
+                            t.DestinationWarehouseId == warehouseId))
+                .Sum(t =>
+                    (t.DestinationWarehouseId == warehouseId ? t.Quantity : 0) -
+                    (t.SourceWarehouseId == warehouseId ? t.Quantity : 0));
+        }
     }
 }
-
-

@@ -29,5 +29,20 @@ namespace RoboostTask.Repositories.Repos
                 .Where(p => !p.IsDeleted && p.Quantity <= p.LowStockThreshold)
                 .ToListAsync();
         }
+        public async Task<List<Product>> GetAllWithStocksAsync()
+        {
+            return await _dbSet
+                .Include(p => p.Stocks)
+                .ThenInclude(s => s.Warehouse)
+                .ToListAsync();
+        }
+        public async Task<Product?> GetByIdWithStocksAsync(Guid id)
+        {
+            return await _dbSet
+                .Include(p => p.Stocks)
+                .ThenInclude(s => s.Warehouse)
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
     }
 }

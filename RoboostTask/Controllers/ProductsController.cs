@@ -63,7 +63,7 @@ namespace RoboostTask.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<Response<bool>> DeleteProduct(Guid id)
         {
-            var result = await _mediator.Send(new DeleteProductBusinessCommand(id));
+            var result = await _mediator.Send(new DeleteProductOrchestratorCommand(id));
             return result;
         }
     }

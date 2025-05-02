@@ -51,6 +51,13 @@ namespace RoboostTask.Repositories.Repos
             }
             await UpdateRangeAsync(stocks);
         }
+        public async Task<List<Stock>> GetProductStocksWithWarehousesAsync(Guid productId)
+        {
+            return await _dbSet
+                .Where(s => s.ProductId == productId)
+                .Include(s => s.Warehouse)
+                .ToListAsync();
+        }
     }
 }
 

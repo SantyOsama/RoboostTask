@@ -19,7 +19,7 @@ namespace RoboostTask.Features.Products.Orchestrators
 
         public async Task<Response<bool>> Handle(CancellationToken cancellationToken)
         {
-            await _mediator.Send(new DeactivateStockCommand());await _mediator.Send(new DeactivateStockCommand { ProductId = ProductId });
+            await _mediator.Send(new DeactivateStockCommand { ProductId = ProductId });
             var deleteProductResponse = await _mediator.Send(new DeleteProductCommand( ProductId));
             return deleteProductResponse;
         }

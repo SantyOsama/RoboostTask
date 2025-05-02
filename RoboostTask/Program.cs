@@ -33,6 +33,7 @@ namespace RoboostTask
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IStockRepository, StockRepository>();
             builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
+            builder.Services.AddScoped<IInventoryTransactionRepository, InventoryTransactionRepository>();
 
 
 

@@ -9,6 +9,8 @@ namespace RoboostTask.Repositories.Interfaces
         Task<bool> StockExistsAsync(Guid productId, Guid warehouseId);
         Task UpdateRangeAsync(IEnumerable<Stock> stocks);
         Task DeactivateStocksForProductAsync(Guid productId);
+        Task<List<Stock>> GetProductStocksWithWarehousesAsync(Guid productId);
+
 
     }
 }

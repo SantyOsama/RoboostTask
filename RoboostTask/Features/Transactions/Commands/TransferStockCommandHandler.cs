@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using RoboostTask.Data;
 using RoboostTask.GeneralResponse;
 using RoboostTask.Models;
 using RoboostTask.Repositories.Interfaces;
@@ -9,26 +8,24 @@ namespace RoboostTask.Features.Transactions.Commands
 {
     public class TransferStockCommandHandler : IRequestHandler<TransferStockCommand, Response<bool>>
     {
-        private readonly AppDbContext _context;
         private readonly IProductRepository _productRepository;
         private readonly IWarehouseRepository _warehouseRepository;
         private readonly IStockRepository _stockRepository;
+        private readonly IInventoryTransactionRepository _transactionRepository;
 
-
-        //بشمهندس احمد قال ان الكلام ده غلط ومينفعش الكوماند الواحد يكون فيه اكتر من ريبو ف هحلها هذاكر الاول الاوركستريتور
         public TransferStockCommandHandler(
-            AppDbContext context,
             IProductRepository productRepository,
             IWarehouseRepository warehouseRepository,
-            IStockRepository stockRepository)
+            IStockRepository stockRepository,
+            IInventoryTransactionRepository transactionRepository)
         {
-            _context = context;
             _productRepository = productRepository;
             _warehouseRepository = warehouseRepository;
             _stockRepository = stockRepository;
+            _transactionRepository = transactionRepository;
         }
 
-        public async Task<Response<bool>> Handle(TransferStockCommand command,CancellationToken cancellationToken)
+        public async Task<Response<bool>> Handle(TransferStockCommand command, CancellationToken cancellationToken)
         {
             var request = command.TransferRequest;
 
@@ -51,6 +48,7 @@ namespace RoboostTask.Features.Transactions.Commands
 
             sourceStock.QuantityInStock -= request.Quantity;
             await _stockRepository.UpdateAsync(sourceStock);
+            await _stockRepository.SaveChangesAsyc();
 
             var destinationStock = await _stockRepository.GetStockAsync(request.ProductId, request.ToWarehouseId);
             if (destinationStock == null)
@@ -68,19 +66,19 @@ namespace RoboostTask.Features.Transactions.Commands
                 destinationStock.QuantityInStock += request.Quantity;
                 await _stockRepository.UpdateAsync(destinationStock);
             }
+            await _stockRepository.SaveChangesAsyc();
 
-            await _context.InventoryTransactions.AddAsync(new InventoryTransaction
+            await _transactionRepository.AddAsync(new InventoryTransaction
             {
                 ProductId = request.ProductId,
                 TransactionType = TransactionType.TransferStock,
                 Quantity = request.Quantity,
                 Date = DateTime.UtcNow,
-                PerformedByUserId = command.UserId, 
+                PerformedByUserId = command.UserId,
                 SourceWarehouseId = request.FromWarehouseId,
                 DestinationWarehouseId = request.ToWarehouseId
             });
-
-            await _context.SaveChangesAsync();
+            await _transactionRepository.SaveChangesAsyc();
 
             return Response<bool>.Success(true, "Stock transferred successfully");
         }

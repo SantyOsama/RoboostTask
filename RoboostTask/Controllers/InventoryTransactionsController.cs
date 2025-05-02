@@ -95,8 +95,8 @@ namespace RoboostTask.Controllers
 
             return Ok(Response<bool>.Success(true, result.Message));
         }
-
-        [HttpGet("current")]
+        [Authorize(Roles = "Admin")]
+        [HttpGet("available-stocks")]
         public async Task<IActionResult> GetAvailableInventory()
         {
             var result = await _mediator.Send(new GetInventoryQuery());

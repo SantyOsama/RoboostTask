@@ -12,7 +12,7 @@ namespace RoboostTask.Repositories.Repos
 
         public async Task<bool> WarehouseExistsAsync(Guid warehouseId)
         {
-            return await _dbSet.AnyAsync(w => w.Id == warehouseId);
+            return await _context.Warehouses.AnyAsync(w => w.Id == warehouseId && !w.IsDeleted);
         }
 
         public async Task<IEnumerable<Warehouse>> GetWarehousesByLocationAsync(string location)
