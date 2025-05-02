@@ -21,7 +21,6 @@ namespace RoboostTask.Features.Stocks.Queries
 
             return products.Select(p => new LowStockReportDTO
             {
-                ProductId = p.Id,
                 Name = p.Name,
                 Description = p.Description,
                 Price = p.Price,

@@ -5,13 +5,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OfficeOpenXml;
 using RoboostTask.Data;
 using RoboostTask.Data.Repositories;
 using RoboostTask.Models;
 using RoboostTask.Repositories.Interfaces;
 using RoboostTask.Repositories.Repos;
+using RoboostTask.Services;
 using System.Security.Claims;
 using System.Text;
+using OfficeOpenXml;
 
 namespace RoboostTask
 {
@@ -19,6 +22,9 @@ namespace RoboostTask
     {
         public static void Main(string[] args)
         {
+            Environment.SetEnvironmentVariable("EPPlusLicenseContext", "NonCommercial");
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -34,6 +40,10 @@ namespace RoboostTask
             builder.Services.AddScoped<IStockRepository, StockRepository>();
             builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
             builder.Services.AddScoped<IInventoryTransactionRepository, InventoryTransactionRepository>();
+
+
+            //
+            builder.Services.AddScoped<IExcelExportService, ExcelExportService>();
 
 
 
@@ -119,6 +129,8 @@ namespace RoboostTask
 
 
             var app = builder.Build();
+            // Set EPPlus license context immediately
+           
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

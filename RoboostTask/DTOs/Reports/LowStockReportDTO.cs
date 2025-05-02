@@ -5,7 +5,6 @@ namespace RoboostTask.DTOs.Reports
 {
     public class LowStockReportDTO
     {
-        public Guid ProductId { get; set; }
         public bool IsLowStock { get; set; }
 
         public string Name { get; set; }
