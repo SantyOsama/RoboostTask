@@ -26,8 +26,9 @@ namespace RoboostTask.Repositories.Repos
         public async Task<IEnumerable<Product>> GetLowStockProductsAsync()
         {
             return await _dbSet.AsNoTracking()
-                .Where(p => !p.IsDeleted && p.Quantity <= p.LowStockThreshold)
-                .ToListAsync();
+                    .Where(p => !p.IsDeleted && p.Quantity <= p.LowStockThreshold)
+                    .Include(p => p.Stocks).ThenInclude(s => s.Warehouse)
+                    .ToListAsync();
         }
         public async Task<List<Product>> GetAllWithStocksAsync()
         {

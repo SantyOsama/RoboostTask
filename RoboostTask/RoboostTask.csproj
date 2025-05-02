@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Stocks\Queries\" />
     <Folder Include="Features\Transactions\Orchestrators\" />
     <Folder Include="Features\Warehouses\Commands\" />
   </ItemGroup>
