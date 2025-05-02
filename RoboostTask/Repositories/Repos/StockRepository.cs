@@ -30,6 +30,27 @@ namespace RoboostTask.Repositories.Repos
             return await _dbSet
                 .AnyAsync(s => s.ProductId == productId && s.WarehouseId == warehouseId);
         }
+
+        public async Task<IEnumerable<Stock>> GetStocksByProductIdAsync(Guid productId)
+        {
+            return await _dbSet
+                .Include(s => s.Warehouse)
+                .Where(s => s.ProductId == productId)
+                .ToListAsync();
+        }
+        public async Task UpdateRangeAsync(IEnumerable<Stock> stocks)
+        {
+            _dbSet.UpdateRange(stocks);
+        }
+        public async Task DeactivateStocksForProductAsync(Guid productId)
+        {
+            var stocks = await GetStocksByProductIdAsync(productId);
+            foreach (var stock in stocks)
+            {
+                stock.IsActive = false;
+            }
+            await UpdateRangeAsync(stocks);
+        }
     }
 }
 

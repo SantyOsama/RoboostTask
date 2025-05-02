@@ -28,7 +28,7 @@ namespace RoboostTask.Features.Products.Commands
             product.Description = request.ProductRequest.Description;
             product.Price = request.ProductRequest.Price;
             product.Quantity = request.ProductRequest.Quantity;
-            product.LowStockThreshold = request.ProductRequest.LowStockThreshold;
+            product.LowStockThreshold = request.ProductRequest.LowStockThreshold;   
 
             await _productRepository.UpdateAsync(product);
             await _productRepository.SaveChangesAsyc();

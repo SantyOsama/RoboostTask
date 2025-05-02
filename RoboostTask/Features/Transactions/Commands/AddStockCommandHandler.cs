@@ -20,9 +20,9 @@ namespace RoboostTask.Features.Transaction.Commands
         {
             var stock = request.StockRequest;
 
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == stock.ProductId);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == stock.ProductId && !p.IsDeleted);
             if (product == null)
-                return  Response<string>.Fail(null, "Product not found");
+                return  Response<string>.Fail(null, "Product not found or is inactive");
 
             Warehouse warehouse = null;
             if (stock.WarehouseId != Guid.Empty)
@@ -50,7 +50,8 @@ namespace RoboostTask.Features.Transaction.Commands
                         Id = Guid.NewGuid(),
                         ProductId = stock.ProductId,
                         WarehouseId = stock.WarehouseId,
-                        QuantityInStock = stock.Quantity
+                        QuantityInStock = stock.Quantity,
+                        IsActive = true
                     };
                     _context.Stocks.Add(stockItem);
                 }

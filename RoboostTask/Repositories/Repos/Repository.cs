@@ -46,7 +46,5 @@ namespace RoboostTask.Data.Repositories
         {
             await _context.SaveChangesAsync();
         }
-
- 
     }
 }

@@ -14,6 +14,8 @@ namespace RoboostTask.Features.Transactions.Commands
         private readonly IWarehouseRepository _warehouseRepository;
         private readonly IStockRepository _stockRepository;
 
+
+        //بشمهندس احمد قال ان الكلام ده غلط ومينفعش الكوماند الواحد يكون فيه اكتر من ريبو ف هحلها هذاكر الاول الاوركستريتور
         public TransferStockCommandHandler(
             AppDbContext context,
             IProductRepository productRepository,

@@ -19,5 +19,6 @@ namespace RoboostTask.Models
 
         [Range(0, int.MaxValue)]
         public int QuantityInStock { get; set; }
+        public bool IsActive {  get; set; }=false;
     }
 }
