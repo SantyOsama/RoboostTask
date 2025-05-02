@@ -22,17 +22,13 @@ namespace RoboostTask.Features.Transaction.Commands
 
             var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == stock.ProductId && !p.IsDeleted);
             if (product == null)
-                return  Response<string>.Fail(null, "Product not found or is inactive");
+                return  Response<string>.Fail(null, "Product not found or is not Active");
 
-            Warehouse warehouse = null;
-            if (stock.WarehouseId != Guid.Empty)
-            {
-                warehouse = await _context.Warehouses
+            var  warehouse = await _context.Warehouses
                     .FirstOrDefaultAsync(w => w.Id == stock.WarehouseId, cancellationToken);
 
-                if (warehouse == null)
+            if (warehouse == null)
                     return Response<string>.Fail(null, "Warehouse not found");
-            }
 
             product.Quantity += stock.Quantity;
 
@@ -40,8 +36,7 @@ namespace RoboostTask.Features.Transaction.Commands
             {
                 var stockItem = await _context.Stocks
                     .FirstOrDefaultAsync(s => s.ProductId == stock.ProductId &&
-                                           s.WarehouseId == stock.WarehouseId,
-                                     cancellationToken);
+                                           s.WarehouseId == stock.WarehouseId);
 
                 if (stockItem == null)
                 {
@@ -68,7 +63,6 @@ namespace RoboostTask.Features.Transaction.Commands
                 PerformedByUserId = request.UserId,
                 Date = DateTime.UtcNow,
                 DestinationWarehouseId = stock.WarehouseId != Guid.Empty ? stock.WarehouseId : null,
-                WarehouseId = stock.WarehouseId != Guid.Empty ? stock.WarehouseId : null
             };
 
             _context.InventoryTransactions.Add(transaction);

@@ -97,7 +97,7 @@ namespace RoboostTask.Controllers
         }
 
         [HttpGet("current")]
-        public async Task<IActionResult> GetCurrentInventory()
+        public async Task<IActionResult> GetAvailableInventory()
         {
             var result = await _mediator.Send(new GetInventoryQuery());
             return Ok(result);

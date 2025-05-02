@@ -86,7 +86,6 @@ namespace RoboostTask.Features.Transaction.Commands
                 PerformedByUserId = request.UserId,
                 Date = DateTime.UtcNow,
                 SourceWarehouseId = stock.WarehouseId != Guid.Empty ? stock.WarehouseId : null,
-                WarehouseId = stock.WarehouseId != Guid.Empty ? stock.WarehouseId : null,
                 CreatedAt = DateTime.UtcNow
             };
 

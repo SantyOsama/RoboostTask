@@ -59,11 +59,11 @@ namespace RoboostTask.Controllers
             var result = await _mediator.Send(new UpdateProductCommand(request));
             return result;
         }
-        [Authorize("Admin")]
+        [Authorize]
         [HttpDelete("{id:guid}")]
         public async Task<Response<bool>> DeleteProduct(Guid id)
         {
-            var result = await _mediator.Send(new DeleteProductCommand(id));
+            var result = await _mediator.Send(new DeleteProductBusinessCommand(id));
             return result;
         }
     }

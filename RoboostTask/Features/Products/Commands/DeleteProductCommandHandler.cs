@@ -10,13 +10,10 @@ namespace RoboostTask.Features.Products.Commands
     public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, Response<bool>>
     {
         private readonly IProductRepository _productRepository;
-        private readonly IStockRepository _stockRepository;
 
         public DeleteProductCommandHandler(IProductRepository productRepository, IStockRepository stockRepository)
         {
             _productRepository = productRepository;
-            _stockRepository = stockRepository;
-
         }
 
         public async Task<Response<bool>> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -29,11 +26,9 @@ namespace RoboostTask.Features.Products.Commands
             if (product.IsDeleted)
                 return Response<bool>.Fail("Product is already deleted.", false, statusCode: 410);
 
-            await _stockRepository.DeactivateStocksForProductAsync(request.Id);
 
             await _productRepository.SoftDeleteAsync(request.Id);
 
-            await _stockRepository.SaveChangesAsyc();
             await _productRepository.SaveChangesAsyc();
 
             var deletedProduct = await _productRepository.GetByIdAsync(request.Id);
