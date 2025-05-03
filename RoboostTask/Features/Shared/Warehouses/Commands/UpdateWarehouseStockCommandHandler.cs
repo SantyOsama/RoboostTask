@@ -3,7 +3,7 @@ using RoboostTask.GeneralResponse;
 using RoboostTask.Models;
 using RoboostTask.Repositories.Interfaces;
 
-namespace RoboostTask.Features.Warehouses.Commands
+namespace RoboostTask.Features.Shared.Warehouses.Commands
 {
     public class UpdateWarehouseStockCommandHandler : IRequestHandler<UpdateWarehouseStockCommand, Response<string>>
     {

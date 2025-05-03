@@ -1,7 +1,8 @@
 ﻿using MediatR;
+using RoboostTask.Enums;
 using RoboostTask.Features.InventoryTransactions.Commands;
 using RoboostTask.Features.Shared.Products.Commands;
-using RoboostTask.Features.Warehouses.Commands;
+using RoboostTask.Features.Shared.Warehouses.Commands;
 using RoboostTask.GeneralResponse;
 
 namespace RoboostTask.Features.Stocks.Orchestrators
@@ -26,8 +27,10 @@ namespace RoboostTask.Features.Stocks.Orchestrators
             var transactionResult = await _mediator.Send(new CreateInventoryTransactionCommand(
                 stock.ProductId,
                 stock.Quantity,
+                Guid.Empty,
                 stock.WarehouseId,
-                request.UserId
+                request.UserId, 
+                TransactionEnum.TransactionType.RemoveStock
             ));
 
             return transactionResult;

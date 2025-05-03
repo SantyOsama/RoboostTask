@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoboostTask.DTOs.Products;
-using RoboostTask.Features.Products.Commands;
 using RoboostTask.Features.Products.Orchestrators;
-using RoboostTask.Features.Products.Queries;
 using RoboostTask.GeneralResponse;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoboostTask.DTOs.Reports;
 using RoboostTask.Features.Reports.Orchestrators;
-using RoboostTask.Features.Reports.Queries;
 using RoboostTask.Services;
 
 namespace RoboostTask.Controllers

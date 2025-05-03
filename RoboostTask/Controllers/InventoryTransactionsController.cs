@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoboostTask.DTOs.Stocks;
-using RoboostTask.Enums;
 using RoboostTask.Features.Transaction.Queries;
-using RoboostTask.Features.Products.Commands;
 using RoboostTask.GeneralResponse;
 using System.Security.Claims;
 using RoboostTask.Features.Transactions.Commands;
@@ -85,7 +83,7 @@ namespace RoboostTask.Controllers
                 return Unauthorized(Response<bool>.Fail("User is not authenticated"));
             }
 
-            var command = new TransferStockCommand(request, userId);
+            var command = new TransferStockOrchestrator(request, userId);
             var result = await _mediator.Send(command);
 
             if (!result.IsSucceeded)

@@ -21,10 +21,12 @@ namespace RoboostTask.Features.InventoryTransactions.Commands
             {
                 ProductId = request.ProductId,
                 Quantity = request.Quantity,
-                TransactionType = TransactionEnum.TransactionType.AddStock,
+                TransactionType = request.TransactionType,
                 PerformedByUserId = request.UserId,
                 Date = DateTime.UtcNow,
-                DestinationWarehouseId = request.DestinationWarehouseId
+                DestinationWarehouseId = request.DestinationWarehouseId ?? Guid.Empty,
+                SourceWarehouseId = request.DestinationWarehouseId ?? Guid.Empty,
+
             };
 
             await _transactionRepository.AddAsync(transaction);
