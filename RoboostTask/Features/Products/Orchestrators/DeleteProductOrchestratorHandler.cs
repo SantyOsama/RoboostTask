@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using RoboostTask.Features.Products.Orchestrators;
-using RoboostTask.Features.Stocks.Commands;
+using RoboostTask.Features.Stocks.Orchestrators;
 using RoboostTask.GeneralResponse;
 
 namespace RoboostTask.Features.Products.Commands
@@ -16,7 +16,7 @@ namespace RoboostTask.Features.Products.Commands
 
         public async Task<Response<bool>> Handle(DeleteProductOrchestrator request, CancellationToken cancellationToken)
         {
-            await _mediator.Send(new DeactivateStockCommand { ProductId = request.ProductId }, cancellationToken);
+            await _mediator.Send(new DeactivateStockOrchestrator (request.ProductId));
 
             var deleteProductResponse = await _mediator.Send(new DeleteProductCommand(request.ProductId), cancellationToken);
 
