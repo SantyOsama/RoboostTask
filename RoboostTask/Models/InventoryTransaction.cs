@@ -33,8 +33,5 @@ namespace RoboostTask.Models
         [ForeignKey("DestinationWarehouseId")]  
         public Warehouse DestinationWarehouse { get; set; }
 
-        //قابلتني مشكلة وان عندي اتنين اوبجيكت من وير هاوس هيميز ازاي بينهم
-        //هروح احطها في الدي بي ست اعمل اوفررايد لفانكشن اون موديل كرييتنج
-
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoboostTask.DTOs.Reports;
-using RoboostTask.Features.Stocks.Queries;
+using RoboostTask.Features.Reports.Queries;
 using RoboostTask.Services;
 
 namespace RoboostTask.Controllers
@@ -49,6 +49,37 @@ namespace RoboostTask.Controllers
         return File(excelBytes,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             $"Low_Stock_Report_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
+        }
+        [HttpGet("transaction-history")]
+        public async Task<ActionResult<List<TransactionHistoryDTO>>> GetTransactionHistoryReport(
+        [FromQuery] TransactionHistoryFilterDTO filter)
+        {
+            var query = new GetTransactionHistoryReportQuery(filter);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        [HttpGet("transaction-history/excel")]
+        public async Task<IActionResult> DownloadTransactionHistoryReportExcel([FromQuery] TransactionHistoryFilterDTO filter)
+        {
+            var report = await _mediator.Send(new GetTransactionHistoryReportQuery(filter));
+
+            var excelData = report.Select(r => new
+            {
+                Product_Name = r.ProductName,
+                Quantity = r.Quantity,
+                Transaction_Type = r.TransactionType.ToString(),
+                Date = r.Date,
+                User = r.UserName,
+                Source_Warehouse = r.SourceWarehouse,
+                Destination_Warehouse = r.DestinationWarehouse
+
+            }).ToList();
+
+            var excelBytes = _excelService.ExportToExcel(excelData, "Transaction_History_Report");
+
+            return File(excelBytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"Transaction_History_Report{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
         }
     }
 }

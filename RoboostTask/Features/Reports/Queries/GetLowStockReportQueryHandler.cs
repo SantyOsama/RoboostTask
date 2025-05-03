@@ -4,7 +4,7 @@ using RoboostTask.DTOs.Reports;
 using RoboostTask.DTOs.Stocks;
 using RoboostTask.Repositories.Interfaces;
 
-namespace RoboostTask.Features.Stocks.Queries
+namespace RoboostTask.Features.Reports.Queries
 {
     public class GetLowStockReportQueryHandler : IRequestHandler<GetLowStockReportQuery, List<LowStockReportDTO>>
     {
@@ -15,9 +15,14 @@ namespace RoboostTask.Features.Stocks.Queries
             _productRepository = productRepository;
         }
 
-        public async Task<List<LowStockReportDTO>> Handle(GetLowStockReportQuery request,CancellationToken cancellationToken)
+        public async Task<List<LowStockReportDTO>> Handle(GetLowStockReportQuery request, CancellationToken cancellationToken)
         {
             var products = await _productRepository.GetLowStockProductsAsync();
+
+            //if (request.CategoryId.HasValue)
+            //{
+            //    products = products.Where(p => p.CategoryId == request.CategoryId.Value);
+            //}
 
             return products.Select(p => new LowStockReportDTO
             {
