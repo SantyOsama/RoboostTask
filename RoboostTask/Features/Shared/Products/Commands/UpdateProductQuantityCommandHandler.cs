@@ -2,7 +2,7 @@
 using RoboostTask.GeneralResponse;
 using RoboostTask.Repositories.Interfaces;
 
-namespace RoboostTask.Features.Products.Commands
+namespace RoboostTask.Features.Shared.Products.Commands
 {
     public class UpdateProductQuantityCommandHandler : IRequestHandler<UpdateProductQuantityCommand, Response<string>>
     {
@@ -19,7 +19,11 @@ namespace RoboostTask.Features.Products.Commands
 
             if (product == null || product.IsDeleted)
                 return Response<string>.Fail("Product not found or is deleted.");
+            if (product.Quantity < Math.Abs(request.QuantityToAdd) && request.QuantityToAdd < 0)
+            {
+                return Response<string>.Fail("Not Available Quantity");
 
+            }
             product.Quantity += request.QuantityToAdd;
 
             await _productRepository.UpdateAsync(product);

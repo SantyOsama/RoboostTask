@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoboostTask.DTOs.Stocks;
 using RoboostTask.Enums;
-using RoboostTask.Features.Transaction.Commands;
 using RoboostTask.Features.Transaction.Queries;
 using RoboostTask.Features.Products.Commands;
 using RoboostTask.GeneralResponse;
@@ -63,7 +62,7 @@ namespace RoboostTask.Controllers
                 return Unauthorized(Response<string>.Fail("User is not authenticated"));
             }
 
-            var result = await _mediator.Send(new DeleteStockCommand(request, userId));
+            var result = await _mediator.Send(new DeleteStockOrchestrator(request, userId));
 
             if (!result.IsSucceeded)
             {
