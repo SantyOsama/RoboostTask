@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoboostTask.DTOs.Reports;
+using RoboostTask.Features.Reports.Orchestrators;
 using RoboostTask.Features.Reports.Queries;
 using RoboostTask.Services;
 
@@ -21,16 +22,16 @@ namespace RoboostTask.Controllers
 
         }
         [HttpGet("low-stock")]
-        public async Task<IActionResult> GetLowStockReport()
+        public async Task<IActionResult> GetLowStockReport([FromQuery] Guid? categoryId)
         {
-            var result = await _mediator.Send(new GetLowStockReportQuery());
+            var result = await _mediator.Send(new GetLowStockReportOrchestrator(categoryId));
             return Ok(result);
         }
         [HttpGet("low-stock/excel")]
-        public async Task<IActionResult> DownloadLowStockReportExcel()
+        public async Task<IActionResult> DownloadLowStockReportExcel([FromQuery] Guid? categoryId)
         {
 
-        var report = await _mediator.Send(new GetLowStockReportQuery());
+        var report = await _mediator.Send(new GetLowStockReportOrchestrator(categoryId));
 
         var excelData = report.Select(r => new
         {
@@ -54,14 +55,14 @@ namespace RoboostTask.Controllers
         public async Task<ActionResult<List<TransactionHistoryDTO>>> GetTransactionHistoryReport(
         [FromQuery] TransactionHistoryFilterDTO filter)
         {
-            var query = new GetTransactionHistoryReportQuery(filter);
+            var query = new GetTransactionHistoryReportOrchestrator(filter);
             var result = await _mediator.Send(query);
             return Ok(result);
         }
         [HttpGet("transaction-history/excel")]
         public async Task<IActionResult> DownloadTransactionHistoryReportExcel([FromQuery] TransactionHistoryFilterDTO filter)
         {
-            var report = await _mediator.Send(new GetTransactionHistoryReportQuery(filter));
+            var report = await _mediator.Send(new GetTransactionHistoryReportOrchestrator(filter));
 
             var excelData = report.Select(r => new
             {
