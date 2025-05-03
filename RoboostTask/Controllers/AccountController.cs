@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -35,6 +36,23 @@ namespace RoboostTask.Controllers
         {
             var result = await _mediator.Send(command);
             return Ok(result);
+        }
+        [Authorize]
+        [HttpGet("check-role")]
+        public IActionResult CheckRole()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var roles = User.Claims
+                           .Where(c => c.Type == ClaimTypes.Role)
+                           .Select(c => c.Value)
+                           .ToList();
+
+            return Ok(new
+            {
+                userId = userId,
+                roles = roles,
+                allClaims = User.Claims.Select(c => new { c.Type, c.Value })
+            });
         }
         //private readonly UserManager<ApplicationUser> userManager;
         //private readonly IConfiguration config;

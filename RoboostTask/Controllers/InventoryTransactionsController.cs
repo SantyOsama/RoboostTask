@@ -12,6 +12,7 @@ using RoboostTask.Features.Stocks.Orchestrators;
 namespace RoboostTask.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     public class InventoryTransactionsController : ControllerBase
     {
@@ -21,7 +22,6 @@ namespace RoboostTask.Controllers
         {
             _mediator = mediator;
         }
-        [Authorize]
         [HttpPost("add-stock")]
         public async Task<Response<string>> AddStock([FromBody] AddStockRequest request)
         {
@@ -68,7 +68,7 @@ namespace RoboostTask.Controllers
             }
             return Ok(Response<string>.Success(result.Message));
         }
-        [Authorize]
+
         [HttpPost("transfer-stock")]
         public async Task<ActionResult<Response<bool>>> TransferStock([FromBody] TransferStockRequest request)
         {
@@ -93,7 +93,6 @@ namespace RoboostTask.Controllers
 
             return Ok(Response<bool>.Success(true, result.Message));
         }
-        [Authorize(Roles = "Admin")]
         [HttpGet("available-stocks")]
         public async Task<IActionResult> GetAvailableInventory()
         {
@@ -101,24 +100,6 @@ namespace RoboostTask.Controllers
             return Ok(result);
         }
 
-
-        [Authorize]
-        [HttpGet("check-role")]
-        public IActionResult CheckRole()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var roles = User.Claims
-                           .Where(c => c.Type == ClaimTypes.Role)
-                           .Select(c => c.Value)
-                           .ToList();
-
-            return Ok(new
-            {
-                userId = userId,
-                roles = roles,
-                allClaims = User.Claims.Select(c => new { c.Type, c.Value })
-            });
-        }
 
     }
 }
