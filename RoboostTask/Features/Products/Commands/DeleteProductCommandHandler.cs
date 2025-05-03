@@ -21,7 +21,7 @@ namespace RoboostTask.Features.Products.Commands
             var product = await _productRepository.GetByIdAsync(request.Id);
 
             if (product == null)
-                return  Response<bool>.Fail("Product not found.", false);
+                return Response<bool>.Fail("Product not found.", false);
 
             if (product.IsDeleted)
                 return Response<bool>.Fail("Product is already deleted.", false, statusCode: 410);
@@ -35,7 +35,7 @@ namespace RoboostTask.Features.Products.Commands
             if (deletedProduct?.IsDeleted != true)
                 return Response<bool>.Fail("Failed to delete product.", false, statusCode: 500);
 
-            return Response<bool>.Success(true,"Product deleted successfully",statusCode: 200);
+            return Response<bool>.Success(true, "Product deleted successfully", statusCode: 200);
         }
     }
 }

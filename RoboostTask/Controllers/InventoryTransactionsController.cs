@@ -10,6 +10,7 @@ using RoboostTask.Features.Products.Commands;
 using RoboostTask.GeneralResponse;
 using System.Security.Claims;
 using RoboostTask.Features.Transactions.Commands;
+using RoboostTask.Features.Stocks.Orchestrators;
 
 namespace RoboostTask.Controllers
 {
@@ -38,7 +39,7 @@ namespace RoboostTask.Controllers
                 return Response<string>.Fail("User is not authenticated");
             }
 
-            var result = await _mediator.Send(new AddStockCommand(request, userId));
+            var result = await _mediator.Send(new AddStockOrchestrator(request, userId));
 
             if (!result.IsSucceeded)
             {

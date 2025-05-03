@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoboostTask.DTOs.Products;
 using RoboostTask.Features.Products.Commands;
+using RoboostTask.Features.Products.Orchestrators;
 using RoboostTask.Features.Products.Queries;
 using RoboostTask.GeneralResponse;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -29,7 +30,7 @@ namespace RoboostTask.Controllers
                 return Response<Guid>.Fail(ModelState.ToString());
             }
 
-            var result = await _mediator.Send(new AddProductCommand(request));
+            var result = await _mediator.Send(new AddProductOrchestrator(request));
 
             return result;
         }
@@ -56,14 +57,14 @@ namespace RoboostTask.Controllers
                 return  Response<string>.Fail(ModelState.ToString());
             }
 
-            var result = await _mediator.Send(new UpdateProductCommand(request));
+            var result = await _mediator.Send(new UpdateProductOrchestrator(request));
             return result;
         }
         [Authorize]
         [HttpDelete("{id:guid}")]
         public async Task<Response<bool>> DeleteProduct(Guid id)
         {
-            var result = await _mediator.Send(new DeleteProductOrchestratorCommand(id));
+            var result = await _mediator.Send(new DeleteProductOrchestrator(id));
             return result;
         }
     }
