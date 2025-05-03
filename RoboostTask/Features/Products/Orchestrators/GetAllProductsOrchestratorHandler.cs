@@ -1,35 +1,29 @@
 ﻿using MediatR;
 using RoboostTask.DTOs.Products;
+using RoboostTask.Features.Products.Queries;
 using RoboostTask.GeneralResponse;
-using RoboostTask.Models;
-using RoboostTask.Repositories.Interfaces;
 
-namespace RoboostTask.Features.Products.Queries
+namespace RoboostTask.Features.Products.Orchestrators
 {
-    public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, Response<List<GetProductResponse>>>
+    public class GetAllProductsOrchestratorHandler : IRequestHandler<GetAllProductsOrchestrator, Response<List<GetProductResponse>>>
     {
-        private readonly IProductRepository _productRepository;
-        private readonly IStockRepository _stockRepository;
+        private readonly IMediator _mediator;
 
-        public GetAllProductsQueryHandler(
-            IProductRepository productRepository,
-            IStockRepository stockRepository)
+        public GetAllProductsOrchestratorHandler(IMediator mediator)
         {
-            _productRepository = productRepository;
-            _stockRepository = stockRepository;
+            _mediator = mediator;
         }
 
-        public async Task<Response<List<GetProductResponse>>> Handle(GetAllProductsQuery request,CancellationToken cancellationToken)
+        public async Task<Response<List<GetProductResponse>>> Handle(GetAllProductsOrchestrator request, CancellationToken cancellationToken)
         {
-            var products = await _productRepository.GetAllWithStocksAsync();
-
+            var products = await _mediator.Send(new GetProductsOnlyQuery(), cancellationToken);
             var productDtos = new List<GetProductResponse>();
 
             foreach (var product in products.Where(p => !p.IsDeleted))
             {
-                var stocks = await _stockRepository.GetProductStocksWithWarehousesAsync(product.Id);
+                var stocks = await _mediator.Send(new GetProductStocksWithWarehousesQuery(product.Id), cancellationToken);
 
-                var productDto = new GetProductResponse
+                var dto = new GetProductResponse
                 {
                     Id = product.Id,
                     Name = product.Name,
@@ -50,9 +44,11 @@ namespace RoboostTask.Features.Products.Queries
                     TotalActiveStock = stocks.Sum(s => s.QuantityInStock)
                 };
 
-                productDtos.Add(productDto);
+                productDtos.Add(dto);
             }
-            return Response<List<GetProductResponse>>.Success(productDtos,"Products retrieved successfully with stock details");
+
+            return Response<List<GetProductResponse>>.Success(productDtos, "Products retrieved successfully with stock details");
         }
     }
+
 }

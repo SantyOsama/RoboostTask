@@ -38,14 +38,14 @@ namespace RoboostTask.Controllers
         [HttpGet("{id:guid}")]
         public async Task<Response<GetProductResponse>> GetProductById(Guid id)
         {
-            var result = await _mediator.Send(new GetProductByIdQuery(id));
+            var result = await _mediator.Send(new GetProductByIdOrchestrator(id));
             return result;
         }
 
         [HttpGet]
         public async Task<Response<List<GetProductResponse>>> GetAllProducts()
         {
-            var result = await _mediator.Send(new GetAllProductsQuery());
+            var result = await _mediator.Send(new GetAllProductsOrchestrator());
             return result;
         }
 
