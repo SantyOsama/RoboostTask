@@ -38,11 +38,11 @@ public class AddStockOrchestratorHandler : IRequestHandler<AddStockOrchestrator,
             TransactionEnum.TransactionType.AddStock
 
         ));
-        //Email
-        var products = await _mediator.Send(new GetLowStockProductsQuery());
-        var lowstockmail=FormatEmail.CreateLowStockEmail(products);
-        SendEmail email = new SendEmail();
-        await email.SendEmailAsync("santyosama2@gmail.com", lowstockmail);
+        ////Email Notification
+        //var products = await _mediator.Send(new GetLowStockProductsQuery());
+        //var lowstockmail=FormatEmail.CreateLowStockEmail(products);
+        //SendEmail email = new SendEmail();
+        //await email.SendEmailAsync("santyosama2@gmail.com", lowstockmail);
         return transactionResult;
     }
 }
